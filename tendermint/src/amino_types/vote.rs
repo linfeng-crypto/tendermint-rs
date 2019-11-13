@@ -1,3 +1,5 @@
+use std::convert::TryFrom;
+
 use super::{
     block_id::{BlockId, CanonicalBlockId, CanonicalPartSetHeader},
     remote_error::RemoteError,
@@ -63,7 +65,7 @@ impl From<&vote::Vote> for Vote {
                     _ => vec![],
                 },
                 parts_header: match &vote.block_id.parts {
-                    Some(parts) => Some(PartsSetHeader::from(parts)),
+                    Some(parts) => PartsSetHeader::try_from(parts).ok(),
                     None => None,
                 },
             }),

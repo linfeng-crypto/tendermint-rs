@@ -1,3 +1,5 @@
+use std::convert::TryFrom;
+
 use super::validate::{ConsensusMessage, ValidationError, ValidationErrorKind::*};
 use crate::block::parts;
 use crate::{
@@ -32,12 +34,18 @@ impl block::ParseId for BlockId {
     }
 }
 
-impl From<&block::Id> for BlockId {
-    fn from(bid: &block::Id) -> Self {
-        let bid_hash = bid.hash.as_bytes().unwrap().to_vec();
-        match &bid.parts {
-            Some(parts) => BlockId::new(bid_hash, Some(PartsSetHeader::from(parts))),
-            None => BlockId::new(bid_hash, None),
+impl TryFrom<&block::Id> for BlockId {
+    type Error = ();
+    fn try_from(bid: &block::Id) -> Result<Self, ()> {
+        match bid.hash.as_bytes() {
+            None => Err(()),
+            Some(bid_hash) => match &bid.parts {
+                Some(parts) => Ok(BlockId::new(
+                    bid_hash.to_vec(),
+                    PartsSetHeader::try_from(parts).ok(),
+                )),
+                None => Ok(BlockId::new(bid_hash.to_vec(), None)),
+            },
         }
     }
 }
@@ -87,9 +95,12 @@ impl PartsSetHeader {
     }
 }
 
-impl From<&parts::Header> for PartsSetHeader {
-    fn from(parts: &parts::Header) -> Self {
-        PartsSetHeader::new(parts.total as i64, parts.hash.as_bytes().unwrap().to_vec())
+impl TryFrom<&parts::Header> for PartsSetHeader {
+    type Error = ();
+    fn try_from(parts: &parts::Header) -> Result<Self, ()> {
+        parts.hash.as_bytes().map_or(Err(()), |bytes| {
+            Ok(PartsSetHeader::new(parts.total as i64, bytes.to_vec()))
+        })
     }
 }
 

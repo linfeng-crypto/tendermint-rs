@@ -1,4 +1,6 @@
 //! Block headers
+use std::convert::TryFrom;
+
 use crate::merkle::simple_hash_from_byte_slices;
 use crate::{account, amino_types, block, chain, lite, Hash, Time};
 use amino_types::{message::AminoMessage, BlockId, ConsensusVersion, TimeMsg};
@@ -103,7 +105,13 @@ impl lite::Header for Header {
         byteslices.push(AminoMessage::bytes_vec(&TimeMsg::from(self.time)));
         byteslices.push(encode_varint(self.num_txs));
         byteslices.push(encode_varint(self.total_txs));
-        byteslices.push(AminoMessage::bytes_vec(&BlockId::from(&self.last_block_id)));
+        byteslices.push(
+            if let Ok(block_id) = BlockId::try_from(&self.last_block_id) {
+                AminoMessage::bytes_vec(&block_id)
+            } else {
+                vec![]
+            },
+        );
         byteslices.push(encode_hash(self.last_commit_hash));
         byteslices.push(encode_hash(self.data_hash));
         byteslices.push(encode_hash(self.validators_hash));
