@@ -1,4 +1,7 @@
+use std::convert::TryFrom;
+
 use super::validate::{ConsensusMessage, ValidationError, ValidationErrorKind::*};
+use crate::block::parts;
 use crate::{
     block,
     error::Error,
@@ -14,6 +17,12 @@ pub struct BlockId {
     pub parts_header: Option<PartsSetHeader>,
 }
 
+impl BlockId {
+    pub fn new(hash: Vec<u8>, parts_header: Option<PartsSetHeader>) -> Self {
+        BlockId { hash, parts_header }
+    }
+}
+
 impl block::ParseId for BlockId {
     fn parse_block_id(&self) -> Result<block::Id, Error> {
         let hash = Hash::new(hash::Algorithm::Sha256, &self.hash)?;
@@ -22,6 +31,22 @@ impl block::ParseId for BlockId {
             .as_ref()
             .and_then(PartsSetHeader::parse_parts_header);
         Ok(block::Id::new(hash, parts_header))
+    }
+}
+
+impl TryFrom<&block::Id> for BlockId {
+    type Error = ();
+    fn try_from(bid: &block::Id) -> Result<Self, ()> {
+        match bid.hash.as_bytes() {
+            None => Err(()),
+            Some(bid_hash) => match &bid.parts {
+                Some(parts) => Ok(BlockId::new(
+                    bid_hash.to_vec(),
+                    PartsSetHeader::try_from(parts).ok(),
+                )),
+                None => Ok(BlockId::new(bid_hash.to_vec(), None)),
+            },
+        }
     }
 }
 
@@ -62,6 +87,21 @@ pub struct PartsSetHeader {
     pub total: i64,
     #[prost(bytes, tag = "2")]
     pub hash: Vec<u8>,
+}
+
+impl PartsSetHeader {
+    pub fn new(total: i64, hash: Vec<u8>) -> Self {
+        PartsSetHeader { total, hash }
+    }
+}
+
+impl TryFrom<&parts::Header> for PartsSetHeader {
+    type Error = ();
+    fn try_from(parts: &parts::Header) -> Result<Self, ()> {
+        parts.hash.as_bytes().map_or(Err(()), |bytes| {
+            Ok(PartsSetHeader::new(parts.total as i64, bytes.to_vec()))
+        })
+    }
 }
 
 impl PartsSetHeader {
