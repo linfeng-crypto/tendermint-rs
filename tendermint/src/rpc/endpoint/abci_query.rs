@@ -64,9 +64,11 @@ impl rpc::Response for Response {}
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 pub struct AbciQuery {
     /// Response code
+    #[serde(default)]
     pub code: Code,
 
     /// Log value
+    #[serde(default)]
     pub log: Log,
 
     /// Info value
@@ -75,7 +77,8 @@ pub struct AbciQuery {
     /// Index
     #[serde(
         serialize_with = "serializers::serialize_i64",
-        deserialize_with = "serializers::parse_i64"
+        deserialize_with = "serializers::parse_i64",
+        default
     )]
     pub index: i64,
 
@@ -99,8 +102,23 @@ pub struct AbciQuery {
     pub proof: Option<Proof>,
 
     /// Block height
-    pub height: block::Height,
+    #[serde(default, deserialize_with = "serializers::parse_height_option")]
+    pub height: Option<block::Height>,
 
     /// Codespace
     pub codespace: Option<String>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json;
+
+    #[test]
+    fn parse_query_responses() {
+        let error_rsp = r#"{"response": {"code": 1, "log": "account lookup failed: account not found", "info": "", "index": "0", "key": null, "value": null, "proof": null, "height": "0", "codespace": ""}}"#;
+        let success_rsp = r#"{"response": {"value": "some value"}}"#;
+        serde_json::from_str::<Response>(error_rsp).expect("parse error response");
+        serde_json::from_str::<Response>(success_rsp).expect("parse success response");
+    }
 }
