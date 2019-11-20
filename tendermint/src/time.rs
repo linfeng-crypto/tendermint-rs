@@ -40,7 +40,7 @@ impl Time {
 
     /// Return an RFC 3339 and ISO 8601 date and time string with 6 subseconds digits and Z.
     pub fn to_rfc3339(&self) -> String {
-        self.0.to_rfc3339_opts(SecondsFormat::Micros, true)
+        self.0.to_rfc3339_opts(SecondsFormat::Nanos, true)
     }
 
     /// Convert this timestamp to a `SystemTime`
