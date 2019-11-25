@@ -9,7 +9,7 @@ pub mod parts;
 mod size;
 
 pub use self::{
-    commit::Commit,
+    commit::*,
     header::Header,
     height::*,
     id::{Id, ParseId},
