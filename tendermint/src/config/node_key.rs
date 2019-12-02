@@ -49,6 +49,7 @@ impl NodeKey {
     pub fn node_id(&self) -> node::Id {
         match &self.public_key() {
             PublicKey::Ed25519(key) => node::Id::from(*key),
+            #[cfg(feature="secp256k1")]
             _ => unreachable!(),
         }
     }
