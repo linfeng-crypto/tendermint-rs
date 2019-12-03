@@ -45,9 +45,9 @@ prost-amino-derive = "0.5"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 sha2 = { version = "0.8", default-features = false }
-signatory = { version = "0.18", features = ["ed25519", "ecdsa"] }
+signatory = { version = "0.18", features = ["ed25519", "ecdsa"]}
 signatory-dalek = "0.18"
-signatory-secp256k1 = "0.18"
+signatory-secp256k1 = { version = "0.18", optional = true }
 subtle = "2"
 subtle-encoding = { version = "0.5", features = ["bech32-preview"] }
 tai64 = { version = "3", features = ["chrono"] }
@@ -59,3 +59,7 @@ zeroize = { version = "1.1", features = ["zeroize_derive"] }
 [dev-dependencies]
 serde_json = "1"
 tokio = { version = "0.2", features = ["macros"] }
+
+[features]
+default = ["secp256k1"]
+secp256k1 = ["signatory-secp256k1"]
