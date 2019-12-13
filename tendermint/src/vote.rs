@@ -103,10 +103,9 @@ impl lite::Vote for SignedVote {
     fn sign_bytes(&self) -> Vec<u8> {
         self.vote.bytes_vec_length_delimited()
     }
+
     fn signature(&self) -> &[u8] {
-        match &self.signature {
-            Signature::Ed25519(sig) => &sig.0,
-        }
+        self.signature.as_ref()
     }
 }
 

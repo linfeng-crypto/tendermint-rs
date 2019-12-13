@@ -170,7 +170,7 @@ impl SignableMsg for SignVoteRequest {
     }
     fn set_signature(&mut self, sig: &ed25519::Signature) {
         if let Some(ref mut vt) = self.vote {
-            vt.signature = sig.clone().to_bytes().to_vec();
+            vt.signature = sig.as_ref().to_vec();
         }
     }
     fn validate(&self) -> Result<(), ValidationError> {

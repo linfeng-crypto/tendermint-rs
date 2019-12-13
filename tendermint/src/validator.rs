@@ -1,13 +1,13 @@
 //! Tendermint validators
-
 use crate::amino_types::message::AminoMessage;
 use crate::{account, lite, merkle, vote, Hash, PublicKey};
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
-use signatory;
-use signatory::ed25519;
-use signatory_dalek;
+use signatory::{
+    ed25519,
+    signature::{Signature, Verifier},
+};
 use signatory_dalek::Ed25519Verifier;
-use signature::{Signature, Verifier};
+//use signature::{Signature, Verifier};
 use subtle_encoding::base64;
 
 /// Validator set contains a vector of validators
