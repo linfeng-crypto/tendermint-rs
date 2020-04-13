@@ -8,8 +8,9 @@ use std::{fs, path::PathBuf};
 use tendermint::block::{Header, Height};
 use tendermint::lite::error::{Error, Kind};
 use tendermint::lite::{Requester, TrustThresholdFraction, TrustedState};
-use tendermint::{block::signed_header::SignedHeader, lite, validator::Set, Hash, Time, evidence::Duration};
-
+use tendermint::{
+    block::signed_header::SignedHeader, evidence::Duration, lite, validator::Set, Hash, Time,
+};
 
 #[derive(Deserialize, Clone, Debug)]
 struct TestCases {
@@ -315,4 +316,3 @@ async fn run_bisection_test(case: TestBisection) {
         }
     }
 }
-

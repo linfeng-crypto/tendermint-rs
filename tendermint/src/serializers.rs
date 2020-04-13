@@ -70,8 +70,8 @@ where
 pub(crate) fn parse_height_option<'de, D>(
     deserializer: D,
 ) -> Result<Option<block::Height>, D::Error>
-    where
-        D: Deserializer<'de>,
+where
+    D: Deserializer<'de>,
 {
     Ok(String::deserialize(deserializer)?
         .parse::<block::Height>()

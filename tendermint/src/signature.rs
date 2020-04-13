@@ -57,7 +57,7 @@ impl Serialize for Signature {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Algorithm {
     /// ECDSA over secp256k1
-    #[cfg(feature="secp256k1")]
+    #[cfg(feature = "secp256k1")]
     EcdsaSecp256k1,
 
     /// EdDSA over Curve25519

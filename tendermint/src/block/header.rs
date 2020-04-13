@@ -45,7 +45,10 @@ pub struct Header {
     pub consensus_hash: Hash,
 
     /// State after txs from the previous block
-    #[serde(deserialize_with = "serializers::parse_hex")]
+    #[serde(
+        deserialize_with = "serializers::parse_hex",
+        serialize_with = "serializers::serialize_hex"
+    )]
     pub app_hash: Vec<u8>,
 
     /// Root hash of all results from the txs from the previous block

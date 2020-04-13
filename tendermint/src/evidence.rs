@@ -102,6 +102,13 @@ pub struct Params {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Duration(u64);
 
+impl Duration {
+    /// create a Duration
+    pub fn new(nanos: u64) -> Self {
+        Duration(nanos)
+    }
+}
+
 impl<'de> Deserialize<'de> for Duration {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         Ok(Duration(
@@ -120,8 +127,8 @@ impl From<Duration> for std::time::Duration {
 
 impl Serialize for Duration {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: Serializer,
+    where
+        S: Serializer,
     {
         format!("{:?}", &self).serialize(serializer)
     }

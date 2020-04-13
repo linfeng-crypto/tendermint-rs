@@ -1,6 +1,6 @@
 //! `/block_results` endpoint JSONRPC wrapper
 
-use crate::{abci, block, rpc, validator, consensus};
+use crate::{abci, block, consensus, rpc, validator};
 use serde::{Deserialize, Serialize};
 
 /// Get ABCI results at a given height.
@@ -50,6 +50,19 @@ pub struct Response {
 
     /// New consensus params
     pub consensus_param_updates: Option<consensus::Params>,
+}
+
+impl Default for Response {
+    fn default() -> Self {
+        Response {
+            height: block::Height::default(),
+            txs_results: None,
+            begin_block_events: None,
+            end_block_events: None,
+            validator_updates: vec![],
+            consensus_param_updates: None,
+        }
+    }
 }
 
 impl rpc::Response for Response {}
