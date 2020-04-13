@@ -1,6 +1,6 @@
 use anomaly::fail;
 use async_trait::async_trait;
-use serde::{de::Error as _, Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
 use std::convert::TryInto;

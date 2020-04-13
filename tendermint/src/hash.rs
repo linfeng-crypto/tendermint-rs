@@ -2,6 +2,7 @@
 
 use crate::error::{Error, Kind};
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
+use std::convert::TryInto;
 use std::{
     fmt::{self, Debug, Display},
     str::FromStr,
@@ -49,6 +50,23 @@ impl Hash {
                 let mut h = [0u8; SHA256_HASH_SIZE];
                 Hex::upper_case().decode_to_slice(s.as_bytes(), &mut h)?;
                 Ok(Hash::Sha256(h))
+            }
+        }
+    }
+
+    /// Decode a `Hash` from utf8 slice
+    pub fn from_utf8(algo: Algorithm, raw: &[u8]) -> Result<Option<Hash>, Error> {
+        match algo {
+            Algorithm::Sha256 => {
+                if !raw.is_empty() {
+                    if raw.len() != SHA256_HASH_SIZE {
+                        return Err(Kind::Length.into());
+                    }
+                    let h: [u8; SHA256_HASH_SIZE] = raw.try_into().map_err(|_| Kind::Length)?;
+                    Ok(Some(Hash::Sha256(h)))
+                } else {
+                    Ok(None)
+                }
             }
         }
     }
